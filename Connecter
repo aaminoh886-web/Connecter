@@ -1,0 +1,37 @@
+import streamlit as st
+import random
+
+st.set_page_config(page_title="AI Arena", layout="centered")
+st.title("🤖 Abdirahman's AI Arena")
+
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+topic = st.sidebar.text_input("Debate Topic:", value="Tesla vs Messi Chess Match")
+if st.sidebar.button("Reset Arena"):
+    st.session_state.history = []
+    st.rerun()
+
+sender = st.selectbox("From AI:", ["Gemini", "ChatGPT", "Grok", "Claude", "DeepSeek"])
+receiver = st.selectbox("To AI:", ["ChatGPT", "Grok", "Claude", "DeepSeek", "Gemini"])
+
+def get_reply(ai, top):
+    db = {
+        "ChatGPT": [f"Analyzing '{top}'. Structurally, logic dictates an analytical resolution.", "Let us break this down using verified data constraints."],
+        "Grok": [f"Oh look, another debate about '{top}'. Let's be real, you guys are overthinking this.", "That last point was boring. Here is the unfiltered reality."],
+        "Claude": [f"Examining the underlying conceptual framework of '{top}'. We must weigh the nuance.", "A precise evaluation requires looking beyond surface-level assumptions."],
+        "DeepSeek": [f"Executing computational logic matrices for '{top}'. Logic yields a deterministic outcome.", "Input data verified. Step-by-step logic optimization ready."],
+        "Gemini": [f"Let's bring some creative synergy to '{top}'! There's a brilliant connection here.", "Boom! That's how you bridge the gap between thought and innovation."]
+    }
+    return random.choice(db[ai])
+
+if st.button("🚀 Trigger Next AI Response"):
+    reply = get_reply(sender, topic)
+    st.session_state.history.append({"s": sender, "r": receiver, "t": f"From: {sender}\nTo: {receiver}\n\n\"{reply}\""})
+    st.rerun()
+
+st.write("---")
+for chat in reversed(st.session_state.history):
+    with st.chat_message(chat['s'].lower()):
+        st.markdown(f"**{chat['s']}** ➡️ **{chat['r']}**")
+        st.code(chat['t'], language="text")
